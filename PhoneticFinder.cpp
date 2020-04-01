@@ -16,19 +16,18 @@ namespace phonetic{
      }
       return false;  
     }    
-    bool check_similarity(string &current,string &target)
-    {   int min_size;
-        if(current.length()<target.length())min_size=current.length();
-        else min_size=target.length();
+    bool check_similarity(string current,string target)
+    { 
+        if(current.length()<target.length()) return false;
         bool set=false;
-        for (int i = 0; i < min_size; i++) {
+        for (int i = 0; i < current.length(); i++) {
             if((same_set(tolower(current[i]),tolower(current[i]))==false)&&(same_set(tolower(target[i]),tolower(target[i]))==false))
             {
                 continue;
             }
             else if(same_set(tolower(current[i]),tolower(target[i]))==true) //belong to da same suspect set
             {
-              set=true;  
+               set=true;  
             }
             else
             {
@@ -42,46 +41,30 @@ namespace phonetic{
        
         return true;
     }
-    void fix_space_start(string & str)
-    {
-        int counter=0;
-        for (int i = 0; i < str.length()&&str[i]==' '; i++)
-        {
-            counter++;
-        }
-        str=str.substr(counter,str.length()-counter-1);
-    }
-    void fix_space_end(string & str)
-    {
-        int counter=0;
-        for (int i = str.length()-1; i >= 0 &&str[i]==' '; i--)
-        {
-            counter++;
-        }
-        str=str.substr(str.length()-counter-1,counter);
-    }
 string find(string text,string target)
 {
-    if(target==""||target.find(" ")!= std::string::npos) throw std::invalid_argument( "you've entered an empty word/ a sentence" );
+    if(target.length()==0) throw std::invalid_argument("empty target");
+    if(text.length()==0) throw std::invalid_argument("empty text");
     bool check=false;
+    bool not_empty=false;
     string temp="";
-    // if(target[0]==' ')fix_space_start(target);
-    // else if(target[target.length()-1]==' ')fix_space_end(target);
-    // else if(text[0]==' ')fix_space_start(text);
-    // else if(text[target.length()-1]==' ')fix_space_end(text);
     for (int i = 0; i < text.length()+1; i++) {
-        if(text[i]==' '||i==text.length())
-        {      // if(temp.compare(" ")!=0){
-               if(check_similarity(temp,target))
+        if(text[i]==' '||text[i]=='\0') //end of line or end of word !
+        {     
+               if(check_similarity(temp,target)&&temp.length()!=0)
                 {
                     return temp;
                 }
-       // }
+       
             temp.clear();
         }
-        else
+        else if(text[i]!=' '){
         temp+=text[i];
+        not_empty=true;
+        }
     }
-        throw std::invalid_argument( "not found" );
+        if(!not_empty)throw std::invalid_argument( "text is empty !" );
+        throw std::invalid_argument( "not found !" );
 }
 };
+
